@@ -27,11 +27,18 @@ local paths and are not intended for committing.
 GSE153760 is a public GEO dataset. This repository does not redistribute its
 expression matrices. Users must download and prepare the input files from GEO.
 
-## Verification boundary
+## Manuscript alignment and verification boundary
 
-The code and configuration are provided for reproducibility, but publication
-of this repository alone does not demonstrate that the final manuscript
-outputs have been regenerated successfully. Verify the complete run, compare
-the exported tables and panels with the final Figure 8, and resolve any
-differences before citing a release as the exact source of the published
-results.
+The October 2, 2026 manuscript describes Mann–Whitney U tests with
+Benjamini–Hochberg correction for Figure 8B and 8C. The current code's B-panel
+significance labels use cell-level tests with adjustment across three genes;
+sample-level expression tests are exported separately. The C-panel
+significance label uses a sample-level test without adjustment. Consequently,
+the code and manuscript statistical descriptions are not yet fully aligned.
+
+The input matrices were not available in the environment used for this
+documentation update. No complete run was performed, and the supplied final
+panels were not numerically matched to regenerated outputs. Before citing a
+release as the exact source of the published Figure 8, specify the experimental
+unit and multiple-testing family in the manuscript, align the plotting code
+and legend, then rerun the workflow and compare the outputs.
