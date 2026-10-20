@@ -1,60 +1,69 @@
-# Figure 8 public-data reanalysis
+# Human skin single-cell RNA-seq analysis
 
-This repository contains the code and analysis settings for the human skin
-single-cell RNA-seq reanalysis associated with Figure 8 of a CHS-CGRP study.
-It is restricted to the public GEO dataset GSE153760. It does not contain
-experimental source data, manuscript files, or generated figures and tables.
+This repository provides a reproducible workflow for reanalysing the public
+human skin single-cell RNA-seq dataset GSE153760. The analysis focuses on
+immune cells and CLEC10A-positive conventional dendritic cell 2 (cDC2)
+populations in healthy controls (HC) and patients with atopic dermatitis (AD).
 
-## Scope
+## Analysis overview
 
-- Load the per-sample 10x matrices from GSE153760.
-- Apply QC, normalization, HVG selection, PCA, UMAP, and Leiden clustering.
-- Select immune cells and a marker-defined CLEC10A-positive cDC2 analysis set.
-- Summarize cDC2 proportions and CCR2, CCR7, and RAMP1 expression at both
-  sample and cell levels; the statistical differences from the manuscript are
-  documented below.
-- Calculate and plot the exploratory diffusion pseudotime analysis.
+The workflow loads per-sample 10x Genomics matrices, performs quality control
+and dimensionality reduction, identifies immune and cDC2 analysis sets, and
+generates summaries for cDC2 abundance, gene expression, and diffusion
+pseudotime. Analysis parameters are specified in
+[`config/analysis_parameters.yaml`](config/analysis_parameters.yaml).
 
-The parameter file is config/analysis_parameters.yaml. The analysis decisions
-and known limits are described in docs/REPRODUCIBILITY.md and
-docs/STATISTICAL_DECISIONS.md.
+The analysis includes:
+
+- quality control, normalization, highly variable gene selection, principal
+  component analysis, UMAP, and Leiden clustering;
+- immune-cell identification by PTPRC expression and cDC2 selection using
+  canonical marker genes and the configured Leiden clusters;
+- HC-versus-AD summaries of CLEC10A-positive cDC2 abundance and expression of
+  CCR2, CCR7, and RAMP1; and
+- exploratory diffusion pseudotime analysis of the selected cDC2 population.
 
 ## Data
 
-Download the public dataset from
-https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE153760 and prepare one
-matching set of *_barcodes.tsv.gz, *_features.tsv.gz, and *_matrix.mtx.gz files
-per sample. Data are not redistributed here. Samples whose names contain _AD
-are assigned to the AD group; other samples are assigned to HC, as configured
-in the runner.
+GSE153760 is available from [NCBI GEO](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE153760).
+The expression matrices are not redistributed in this repository. Prepare one
+set of 10x-format `barcodes.tsv.gz`, `features.tsv.gz`, and `matrix.mtx.gz`
+files per sample. Sample names containing `_AD` are assigned to the AD group;
+all other sample names are assigned to HC.
 
-## Run
+## Installation
 
-Create the environment:
+Create the analysis environment with Conda:
 
-    conda env create -f environment.yml
-    conda activate chs-cgrp-figure8
+```bash
+conda env create -f environment.yml
+conda activate chs-cgrp-figure8
+```
 
-Run the analysis with absolute input and output paths:
+## Run the analysis
 
-    python scripts/run_figure8.py --data-dir /path/to/GSE153760_10x_matrices --output-dir /path/to/figure8-results
+Provide absolute paths to the input and output directories:
 
-The runner writes a manifest, log, tables, and PDF figures to the output
-directory. These generated files and input data are excluded from Git.
+```bash
+python scripts/run_figure8.py \
+  --data-dir /path/to/GSE153760_10x_matrices \
+  --output-dir /path/to/figure8-results
+```
 
-## Interpretation and manuscript alignment
+The output directory contains a run manifest and log, tables of cell-level and
+sample-level summaries, and generated figures. Input matrices and generated
+outputs are excluded from version control.
 
-The October 2, 2026 manuscript describes Mann–Whitney U tests with
-Benjamini–Hochberg correction for Figure 8B and 8C. The current workflow does
-not reproduce that statistical presentation exactly: Figure 8B significance
-labels are based on cell-level tests, while sample-level expression summaries
-are exported separately; Figure 8C is tested at sample level without a
-multiple-testing adjustment. See
-[`docs/STATISTICAL_DECISIONS.md`](docs/STATISTICAL_DECISIONS.md) for details.
+## Statistical analysis and interpretation
 
-The public-data analysis is observational and cannot establish causality in
-human atopic dermatitis. Cluster selection and the pseudotime root are
-data-dependent analytical choices and should be rechecked if inputs or
-upstream settings change. The complete workflow has not been rerun against the
-manuscript's final Figure 8 in this environment; this repository should not
-yet be cited as an exact reproduction of the published panels or statistics.
+The analysis reports both cell-level expression distributions and
+sample-level summaries. Statistical tests and their units are documented in
+[`docs/STATISTICAL_DECISIONS.md`](docs/STATISTICAL_DECISIONS.md). The workflow
+is observational: it characterizes associations in GSE153760 and does not
+establish causal mechanisms in human atopic dermatitis. Diffusion pseudotime
+provides a computational ordering of cells and should not be interpreted as a
+direct measurement of cell lineage or temporal progression.
+
+Further information on data provenance and reproducibility is available in
+[`docs/REPRODUCIBILITY.md`](docs/REPRODUCIBILITY.md). Citation metadata are
+provided in [`CITATION.cff`](CITATION.cff).

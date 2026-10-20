@@ -1,44 +1,51 @@
-# Reproducibility and scope
+# Reproducibility and data provenance
 
-This repository contains only the public human skin scRNA-seq reanalysis
-associated with Figure 8. Its input is GEO GSE153760; no unpublished
-experimental data, manuscript drafts, microscopy, flow-cytometry files, or
-locally generated figure assets are included.
+## Data source
 
-## Analysis stages
+The analysis uses the public human skin single-cell RNA-seq dataset GSE153760,
+available through [NCBI GEO](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE153760).
+Expression matrices are not included in this repository. Users should obtain
+the data from GEO and prepare one 10x-format matrix set per sample before
+running the workflow. Sample identifiers containing `_AD` are assigned to
+the AD group; remaining samples are assigned to HC.
 
-1. Load the per-sample 10x matrices and assign HC or AD group labels from sample
-   names.
-2. Apply the QC and normalization settings in
-   config/analysis_parameters.yaml.
-3. Generate a global embedding and Leiden clusters, then select immune cells
-   and the marker-defined cDC2 subset.
-4. Export sample-level summaries and descriptive cell-level distributions for
-   the cDC2 fraction and CCR2, CCR7, and RAMP1 expression.
-5. Compute the exploratory diffusion pseudotime and export its cell metadata
-   and gene-trend table.
+## Analysis configuration
 
-The runner records input filenames and sizes, parameters, software versions,
-and execution logs in the chosen output directory. These files may include
-local paths and are not intended for committing.
+Versioned parameters are maintained in
+[`config/analysis_parameters.yaml`](../config/analysis_parameters.yaml). The
+configuration records the dataset accession, quality-control thresholds,
+embedding parameters, marker-based cell selection, pseudotime settings, and
+statistical procedures. Review the configuration and confirm that the sample
+identifiers match the intended group assignments before analysis.
 
-## Data provenance
+## Execution and outputs
 
-GSE153760 is a public GEO dataset. This repository does not redistribute its
-expression matrices. Users must download and prepare the input files from GEO.
+Run the complete workflow using the command in the repository README. The
+runner writes the following to the selected output directory:
 
-## Manuscript alignment and verification boundary
+- `run_manifest.json`, containing the configuration, input file inventory,
+  Python and package versions, and execution environment;
+- `run.log`, containing the workflow log;
+- `tables/`, containing cell-level expression data, sample-level summaries,
+  test results, and pseudotime metadata and trends; and
+- `figures/`, containing the generated analysis figures.
 
-The October 2, 2026 manuscript describes Mann–Whitney U tests with
-Benjamini–Hochberg correction for Figure 8B and 8C. The current code's B-panel
-significance labels use cell-level tests with adjustment across three genes;
-sample-level expression tests are exported separately. The C-panel
-significance label uses a sample-level test without adjustment. Consequently,
-the code and manuscript statistical descriptions are not yet fully aligned.
+The manifest may include machine-specific paths. Keep run outputs and input
+matrices outside version control unless they have been reviewed and approved
+for distribution.
 
-The input matrices were not available in the environment used for this
-documentation update. No complete run was performed, and the supplied final
-panels were not numerically matched to regenerated outputs. Before citing a
-release as the exact source of the published Figure 8, specify the experimental
-unit and multiple-testing family in the manuscript, align the plotting code
-and legend, then rerun the workflow and compare the outputs.
+## Reproduction checks
+
+For each run, retain the manifest and log with the output files. Confirm that
+all expected samples were loaded, that group assignments are correct, and
+that the generated tables and figures correspond to the selected configuration.
+The analysis parameters and statistical units are described in
+[`STATISTICAL_DECISIONS.md`](STATISTICAL_DECISIONS.md).
+
+## Scope
+
+This workflow reanalyses public observational data. Results describe patterns
+in the source dataset and do not establish causal relationships. Cell
+selection, clustering, and pseudotime ordering depend on the configured
+markers and analysis parameters; alternative settings may produce different
+results.

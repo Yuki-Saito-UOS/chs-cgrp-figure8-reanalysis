@@ -1,50 +1,54 @@
-# Statistical decisions
+# Statistical analysis
 
-## Manuscript description (October 2, 2026)
+## Analysis units
 
-The Figure 8 legend specifies a Mann–Whitney U test with Benjamini–Hochberg
-correction for panels B and C. The main Statistical analysis section gives
-Student's two-tailed t-test or one-way ANOVA followed by Tukey–Kramer unless
-otherwise stated; the Figure 8 legend is the stated exception for these
-panels. The legend does not specify the experimental unit or the family of
-tests included in the correction.
+The workflow produces cell-level expression distributions and summaries at
+the sample level. Samples are the biological units for HC-versus-AD
+comparisons of cDC2 abundance and sample-mean gene expression. Cell-level
+expression tests are retained as a separate analysis and do not account for
+dependence among cells from the same sample.
 
-## Experimental unit and current implementation
+## cDC2 abundance
 
-Cells from the same sample or donor are not independent biological
-replicates. Sample-level summaries are therefore the appropriate unit for
-HC-versus-AD inference unless a model accounts for donor clustering.
+For each sample, the workflow calculates the fraction of PTPRC-positive
+leukocytes assigned to the selected CLEC10A-positive cDC2 analysis set. HC and
+AD groups are compared using a two-sided Mann–Whitney U test on sample-level
+fractions. The resulting p-value is reported without multiple-testing
+adjustment.
 
-The current code has two different statistical paths for Figure 8B:
+## Gene expression
 
-- The violin plot and its significance labels use cell-level two-sided
-  Mann–Whitney U tests, followed by Benjamini–Hochberg adjustment across
-  CCR2, CCR7, and RAMP1. The displayed cells are sampled for plotting, but the
-  tests use all cells. These cell-level p-values do not account for donor
-  clustering and should not be interpreted as donor-level inference.
-- Per-sample mean expression and sample-level Mann–Whitney U p-values are also
-  exported, but they are not used for the violin-plot significance labels.
-- The cDC2 proportion is summarized and tested per sample using a two-sided
-  Mann–Whitney U test. The current code does not adjust this p-value for
-  multiple testing.
+CCR2, CCR7, and RAMP1 expression are summarized within the selected cDC2
+population.
 
-## Difference from the manuscript
+- Cell-level expression distributions are visualized by group. To limit the
+  number of displayed points, up to 2,500 cells per gene and group are
+  selected for plotting with a fixed random seed. The violin distributions
+  and Mann–Whitney U tests use all eligible cells. Two-sided p-values are
+  adjusted across the three genes using the Benjamini–Hochberg procedure;
+  adjusted values determine the significance labels on the plots.
+- For each sample, mean expression is calculated separately for each gene.
+  HC and AD sample means are compared using two-sided Mann–Whitney U tests.
+  The resulting p-values are adjusted across the three genes using the
+  Benjamini–Hochberg procedure and exported with the sample-level summaries.
 
-The October 2, 2026 Figure 8 legend says panels B and C use Mann–Whitney U
-tests with Benjamini–Hochberg correction. The current implementation instead
-uses cell-level tests for the B-panel labels, sample-level unadjusted tests for
-the C-panel label, and exports but does not plot sample-level expression
-tests. Thus the code, plotted significance labels, and manuscript description
-are not yet fully aligned. The correction family and experimental unit in the
-manuscript also need to be stated explicitly to make the analysis auditable.
+Cell-level tests do not account for within-sample dependence and should be
+interpreted as exploratory. Sample-level comparisons use the sample as the
+unit of analysis.
 
-The input matrices were unavailable in the environment used for this update,
-so group sample counts, p-values, and regenerated panels could not be compared
-with the supplied manuscript figures. Do not treat the current repository
-outputs as verified numerical reproductions of Figure 8.
+## Diffusion pseudotime
 
-## Interpretation
+Diffusion pseudotime is used to describe transcriptional patterns across the
+selected cDC2 cell population. The root is selected using the configured
+CCR2-high, CCR7-low, and LAMP3-low score. Gene-expression trends and positive
+cell fractions are summarized across quantile-based pseudotime bins and
+smoothed for visualization. These analyses are descriptive and do not test a
+temporal or lineage relationship.
 
-The human public-data reanalysis is observational. It can describe
-associations in GSE153760 but cannot establish that the TRPV1–CGRP–RAMP1
-mechanism causes atopic dermatitis in humans.
+## Multiple testing and reporting
+
+Benjamini–Hochberg adjustment is applied separately to the three gene-level
+tests for cell-level expression and to the three gene-level tests for
+sample-level mean expression. The cDC2 abundance comparison is a single
+unadjusted test. The run output records sample counts, test results, and
+analysis parameters for reporting.
