@@ -1,0 +1,46 @@
+# Parameters used for the human skin scRNA-seq reanalysis shown in manuscript Fig. 8.
+# Copy this file to config/local_analysis_parameters.yaml only when a machine-specific
+# data path is needed; local_* configuration files are ignored by Git.
+dataset:
+  accession: GSE153760
+  source: https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE153760
+  input_format: 10x_mtx_per_sample
+  ad_sample_pattern: _AD
+
+qc:
+  min_genes: 200
+  max_genes: 6000
+  max_pct_mt: 20.0
+  target_sum: 10000
+
+embedding:
+  n_top_genes: 2000
+  n_neighbors: 15
+  n_pcs: 30
+  min_dist: 0.3
+  leiden_resolution: 0.5
+
+cdc2_gate:
+  immune_gene: PTPRC
+  required_positive_genes: [PTPRC, CLEC10A, CD1C]
+  dc_enrichment_genes: [CLEC10A, CD1C, ITGAX, FCER1A]
+  # Clusters 6 (cDC1-like) and 7 (monocyte/macrophage-like) are excluded after
+  # marker review. This is a data-dependent annotation and must be rechecked
+  # whenever upstream parameters or data versions change.
+  retained_leiden_clusters: ['0', '1', '2', '3', '4', '5', '8', '9', '10', '11']
+
+pseudotime:
+  root_positive_gene: CCR2
+  root_negative_genes: [CCR7, LAMP3]
+  root_negative_weights: [3.0, 4.0]
+  n_neighbors: 12
+  n_pcs: 30
+  min_dist: 0.3
+  n_bins: 100
+  smooth_window: 10
+  early_trajectory_xlim: [0.0, 0.16]
+
+statistics:
+  primary_unit: sample
+  secondary_unit: cell_descriptive_only
+  multiple_testing: benjamini-hochberg
