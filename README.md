@@ -9,8 +9,8 @@ populations in healthy controls (HC) and patients with atopic dermatitis (AD).
 
 The workflow loads per-sample 10x Genomics matrices, performs quality control
 and dimensionality reduction, identifies immune and cDC2 analysis sets, and
-generates summaries for cDC2 abundance, gene expression, and diffusion
-pseudotime. Analysis parameters are specified in
+generates summaries for the proportion of CLEC10A-positive cDC2s among leukocytes,
+gene expression, and diffusion pseudotime. Analysis parameters are specified in
 [`config/analysis_parameters.yaml`](config/analysis_parameters.yaml).
 
 The analysis includes:
