@@ -17,10 +17,10 @@ The analysis includes:
 
 - quality control, normalization, highly variable gene selection, principal
   component analysis, UMAP, and Leiden clustering;
-- immune-cell identification by PTPRC expression and cDC2 selection using
-  canonical marker genes and the configured Leiden clusters;
-- HC-versus-AD summaries of CLEC10A-positive cDC2 abundance and expression of
-  CCR2, CCR7, and RAMP1; and
+-leukocyte selection based on PTPRC expression, immune-cell annotation using canonical marker genes,
+  and cDC2 selection using marker expression and configured Leiden clusters;
+- HC-versus-AD comparisons of the proportion of CLEC10A-positive cDC2s among leukocytes and expression of CCR2, CCR7, and RAMP1; and
+
 - exploratory diffusion pseudotime analysis of the selected cDC2 population.
 
 ## Data
