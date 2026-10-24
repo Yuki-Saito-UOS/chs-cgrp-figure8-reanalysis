@@ -5,7 +5,7 @@ type: software
 authors:
   - family-names: Saito
     given-names: Yuki
-version: 1.0.0
+version: 1.0.1
 abstract: >-
   Code and analysis settings for the human skin single-cell RNA-seq reanalysis
   of public GEO dataset GSE153760 associated with Figure 8 of a CHS-CGRP study.
