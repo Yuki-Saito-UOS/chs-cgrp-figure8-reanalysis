@@ -1,0 +1,52 @@
+name: Publish Figure 8 v1.0.1
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/publish-figure8-v1.0.1.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  publish-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create v1.0.1 tag and GitHub Release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          if gh release view v1.0.1 >/dev/null 2>&1; then
+            echo "GitHub Release v1.0.1 already exists."
+            exit 0
+          fi
+          cat > /tmp/release-notes.md <<'RELEASE_NOTES'
+          ## Figure 8 public-data reanalysis — v1.0.1
+
+          This maintenance release updates the documentation for the publicly reproducible GSE153760 human skin single-cell RNA-seq workflow associated with Figure 8 of a CHS–CGRP study.
+
+          ### What's changed since v1.0.0
+          - Clarified PTPRC-positive leukocyte identification and marker-informed CLEC10A-positive cDC2 selection.
+          - Clarified the HC-versus-AD comparison of CLEC10A-positive cDC2 fractions among leukocytes and CCR2, CCR7, and RAMP1 expression.
+          - Expanded statistical-method documentation, distinguishing exploratory cell-level tests from sample-level biological replicates and documenting Benjamini–Hochberg adjustments.
+          - Expanded data provenance, run manifests, logs, and reproducibility instructions.
+          - Updated citation metadata to version 1.0.1.
+
+          ### Scope and limitations
+          - This release includes analysis code and configuration, not input expression matrices or generated output figures.
+          - The changes relative to v1.0.0 are documentation and citation metadata, not revisions to the analysis code.
+          - The final manuscript statistics and final input/output reproducibility have not been independently verified in this release. Cell-level tests do not account for correlations between cells from the same sample.
+          - Diffusion pseudotime is exploratory; observational data do not establish causality.
+
+          See README.md, docs/STATISTICAL_DECISIONS.md, docs/REPRODUCIBILITY.md and CITATION.cff for details.
+          RELEASE_NOTES
+          gh release create v1.0.1 \
+            --target "$RELEASE_SHA" \
+            --title "v1.0.1 — Figure 8 public-data reanalysis" \
+            --notes-file /tmp/release-notes.md \
+            --latest
